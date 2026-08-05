@@ -245,3 +245,5 @@ Genetic Algorithm steps:
 | No timetable in viewer | Select academic year marked with ★ |
 | PDF export failed | Make sure a timetable is loaded first |
 | Port in use error | Run `stop.bat` then `start.bat` |
+#   t i m e - _ t a b l e _ m a n a g e m e n t  
+ 
