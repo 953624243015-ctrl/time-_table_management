@@ -6,7 +6,9 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
-    "db:setup": "node src/utils/dbSetup.js"
+    "db:init": "node src/utils/initDB.js",
+    "db:setup": "node src/utils/dbSetup.js",
+    "db:seed": "node src/utils/seedAllDepts.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

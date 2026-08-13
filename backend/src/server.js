@@ -29,7 +29,20 @@ const PORT = process.env.PORT || 5000;
 app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  // Allow Vercel frontend + localhost in dev
+  origin: function (origin, callback) {
+    const allowed = [
+      process.env.FRONTEND_URL,
+      'http://localhost:5173',
+      'http://localhost:3000',
+    ].filter(Boolean);
+    // Allow requests with no origin (mobile apps, Postman, etc.)
+    if (!origin || allowed.some(u => origin.startsWith(u))) {
+      callback(null, true);
+    } else {
+      callback(new Error('CORS not allowed: ' + origin));
+    }
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,

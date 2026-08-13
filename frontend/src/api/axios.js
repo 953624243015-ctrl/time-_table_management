@@ -1,12 +1,18 @@
 import axios from 'axios';
 
+// In production (Vercel), use the deployed Render backend URL
+// In development, use Vite proxy ('/api' → localhost:5000)
+const baseURL = import.meta.env.VITE_API_URL
+  ? `${import.meta.env.VITE_API_URL}/api`
+  : '/api';
+
 const api = axios.create({
-  baseURL: '/api',
+  baseURL,
   timeout: 30000,
   headers: { 'Content-Type': 'application/json' },
 });
 
-// Request interceptor - attach JWT token
+// Request interceptor — attach JWT token
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
@@ -16,7 +22,7 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Response interceptor - handle auth errors
+// Response interceptor — handle auth errors
 api.interceptors.response.use(
   (response) => response,
   (error) => {
