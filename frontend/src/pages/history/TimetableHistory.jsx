@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { History, Save, RotateCcw, Eye, Calendar, Star } from 'lucide-react';
 import { historyAPI, departmentAPI, timeslotAPI } from '../../api';
 import Modal from '../../components/common/Modal';
 import ConfirmDialog from '../../components/common/ConfirmDialog';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
-import toast from 'react-hot-toast';
+import notify from '../../utils/notify';
 
 export default function TimetableHistory() {
   const [versions, setVersions]     = useState([]);
@@ -24,7 +24,7 @@ export default function TimetableHistory() {
     try {
       const res = await historyAPI.list(filters);
       setVersions(res.data.data || []);
-    } catch { toast.error('Failed to load history'); }
+    } catch { notify.error('Failed to load history'); }
     finally { setLoading(false); }
   };
 
@@ -42,7 +42,7 @@ export default function TimetableHistory() {
 
   const handleSaveVersion = async () => {
     if (!filters.department_id || !filters.semester || !filters.academic_year_id) {
-      return toast.error('Select Department, Semester and Academic Year first');
+      return notify.error('Select Department, Semester and Academic Year first');
     }
     setSaving(true);
     try {
@@ -52,10 +52,10 @@ export default function TimetableHistory() {
         academic_year_id: +filters.academic_year_id,
         version_label:    `Snapshot ${new Date().toLocaleDateString('en-IN')}`,
       });
-      toast.success(res.data.message);
+      notify.success(res.data.message);
       fetchVersions();
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Snapshot failed');
+      notify.error(err.response?.data?.message || 'Snapshot failed');
     } finally { setSaving(false); }
   };
 
@@ -65,7 +65,7 @@ export default function TimetableHistory() {
     try {
       const res = await historyAPI.getOne(id);
       setPreview(res.data.data);
-    } catch { toast.error('Failed to load version'); }
+    } catch { notify.error('Failed to load version'); }
     finally { setLoadingPreview(false); }
   };
 
@@ -73,11 +73,11 @@ export default function TimetableHistory() {
     setRestoring(true);
     try {
       const res = await historyAPI.restore(restoreId);
-      toast.success(res.data.message);
+      notify.success(res.data.message);
       setRestoreId(null);
       fetchVersions();
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Restore failed');
+      notify.error(err.response?.data?.message || 'Restore failed');
     } finally { setRestoring(false); }
   };
 
@@ -106,7 +106,7 @@ export default function TimetableHistory() {
       <div className="card p-4 flex flex-wrap gap-3">
         <select className="input-field w-52" value={filters.department_id} onChange={e => setFilters(f => ({ ...f, department_id:e.target.value }))}>
           <option value="">All Departments</option>
-          {depts.map(d => <option key={d.id} value={d.id}>{d.code} – {d.name}</option>)}
+          {depts.map(d => <option key={d.id} value={d.id}>{d.code} â€“ {d.name}</option>)}
         </select>
         <select className="input-field w-36" value={filters.semester} onChange={e => setFilters(f => ({ ...f, semester:e.target.value }))}>
           <option value="">All Semesters</option>
@@ -114,7 +114,7 @@ export default function TimetableHistory() {
         </select>
         <select className="input-field w-40" value={filters.academic_year_id} onChange={e => setFilters(f => ({ ...f, academic_year_id:e.target.value }))}>
           <option value="">All Years</option>
-          {acYears.map(y => <option key={y.id} value={y.id}>{y.year_label}{y.is_current ? ' ★':''}</option>)}
+          {acYears.map(y => <option key={y.id} value={y.id}>{y.year_label}{y.is_current ? ' â˜…':''}</option>)}
         </select>
       </div>
 
@@ -139,7 +139,7 @@ export default function TimetableHistory() {
                       </div>
                       <p style={{ fontSize:11, color:'#94a3b8', margin:0 }}>{v.version_label}</p>
                     </td>
-                    <td className="table-cell">{v.dept_name || '—'}</td>
+                    <td className="table-cell">{v.dept_name || 'â€”'}</td>
                     <td className="table-cell text-center">Sem {v.semester}</td>
                     <td className="table-cell text-center font-mono">{v.total_entries}</td>
                     <td className="table-cell text-center">
@@ -147,7 +147,7 @@ export default function TimetableHistory() {
                         {Number(v.fitness_score).toFixed(1)}
                       </span>
                     </td>
-                    <td className="table-cell text-slate-500">{v.created_by_name || '—'}</td>
+                    <td className="table-cell text-slate-500">{v.created_by_name || 'â€”'}</td>
                     <td className="table-cell text-slate-500 text-xs">{new Date(v.created_at).toLocaleString('en-IN')}</td>
                     <td className="table-cell">{v.is_active ? <span className="badge-active">Active</span> : <span className="badge-inactive">Old</span>}</td>
                     <td className="table-cell">
@@ -168,7 +168,7 @@ export default function TimetableHistory() {
       </div>
 
       {/* Preview modal */}
-      <Modal open={!!previewId} onClose={() => { setPreviewId(null); setPreview(null); }} title={preview ? `Version ${preview.version_number} — ${preview.dept_name}` : 'Loading...'} size="xl">
+      <Modal open={!!previewId} onClose={() => { setPreviewId(null); setPreview(null); }} title={preview ? `Version ${preview.version_number} â€” ${preview.dept_name}` : 'Loading...'} size="xl">
         {loadingPreview ? <LoadingSpinner /> : preview && (
           <div>
             <div className="flex gap-4 mb-4 flex-wrap">
@@ -223,3 +223,4 @@ export default function TimetableHistory() {
     </div>
   );
 }
+

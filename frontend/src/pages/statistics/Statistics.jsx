@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { BarChart3, Users, BookOpen, Building2, RefreshCw } from 'lucide-react';
 import { Bar, Doughnut, Radar } from 'react-chartjs-2';
 import {
@@ -129,7 +129,7 @@ export default function Statistics() {
         <div className="flex gap-2">
           <select className="input-field w-40" value={academicYearId} onChange={e => setAYId(e.target.value)}>
             <option value="">All Years</option>
-            {acYears.map(y => <option key={y.id} value={String(y.id)}>{y.year_label}{y.is_current?' ★':''}</option>)}
+            {acYears.map(y => <option key={y.id} value={String(y.id)}>{y.year_label}{y.is_current?' â˜…':''}</option>)}
           </select>
           <button onClick={fetchAll} className="btn-secondary"><RefreshCw size={14} /></button>
         </div>
@@ -283,3 +283,4 @@ export default function Statistics() {
     </div>
   );
 }
+

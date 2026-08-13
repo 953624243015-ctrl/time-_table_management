@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { Plus, Pencil, Trash2, Clock } from 'lucide-react';
 import { timeslotAPI } from '../../api';
 import Modal from '../../components/common/Modal';
 import ConfirmDialog from '../../components/common/ConfirmDialog';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
-import toast from 'react-hot-toast';
+import notify from '../../utils/notify';
 
 const empty = { slot_name: '', start_time: '', end_time: '', period_number: '', is_break: 0, break_type: '' };
 
@@ -22,7 +22,7 @@ const TimeSlots = () => {
     try {
       const res = await timeslotAPI.getAll();
       setItems(res.data.data || []);
-    } catch { toast.error('Failed to load time slots'); }
+    } catch { notify.error('Failed to load time slots'); }
     finally { setLoading(false); }
   };
 
@@ -41,16 +41,16 @@ const TimeSlots = () => {
     try {
       if (editing) await timeslotAPI.update(editing.id, form);
       else await timeslotAPI.create(form);
-      toast.success(editing ? 'Updated successfully' : 'Created successfully');
+      notify.success(editing ? 'Updated successfully' : 'Created successfully');
       setModal(false);
       fetchAll();
-    } catch (err) { toast.error(err.response?.data?.message || 'Operation failed'); }
+    } catch (err) { notify.error(err.response?.data?.message || 'Operation failed'); }
     finally { setSaving(false); }
   };
 
   const handleDelete = async () => {
-    try { await timeslotAPI.remove(deleteId); toast.success('Deleted'); setDeleteId(null); fetchAll(); }
-    catch (err) { toast.error(err.response?.data?.message || 'Delete failed'); }
+    try { await timeslotAPI.remove(deleteId); notify.success('Deleted'); setDeleteId(null); fetchAll(); }
+    catch (err) { notify.error(err.response?.data?.message || 'Delete failed'); }
   };
 
   return (
@@ -89,7 +89,7 @@ const TimeSlots = () => {
                       <td className="table-cell font-medium text-slate-900 dark:text-slate-100">{item.slot_name}</td>
                       <td className="table-cell font-mono text-primary-600">{start}</td>
                       <td className="table-cell font-mono text-primary-600">{end}</td>
-                      <td className="table-cell text-slate-500">{dur > 0 ? `${dur} min` : '—'}</td>
+                      <td className="table-cell text-slate-500">{dur > 0 ? `${dur} min` : 'â€”'}</td>
                       <td className="table-cell">
                         {item.is_break
                           ? <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300">{item.break_type || 'Break'}</span>
@@ -161,3 +161,4 @@ const TimeSlots = () => {
 };
 
 export default TimeSlots;
+

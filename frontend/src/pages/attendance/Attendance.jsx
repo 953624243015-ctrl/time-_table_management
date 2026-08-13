@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { ClipboardList, CheckCircle2, XCircle, Clock, Calendar } from 'lucide-react';
 import { attendanceAPI, classAPI, timeslotAPI } from '../../api';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
-import toast from 'react-hot-toast';
+import notify from '../../utils/notify';
 
 const STATUS_STYLES = {
   conducted:    { bg:'#dcfce7', color:'#166534', label:'Conducted' },
@@ -23,7 +23,7 @@ export default function Attendance() {
     try {
       const res = await attendanceAPI.getToday();
       setTodayData(res.data.data);
-    } catch { toast.error('Failed to load today\'s schedule'); }
+    } catch { notify.error('Failed to load today\'s schedule'); }
     finally { setLoading(false); }
   };
 
@@ -46,10 +46,10 @@ export default function Attendance() {
         day_of_week:  todayData.day,
         status,
       });
-      toast.success(`Marked as ${status}`);
+      notify.success(`Marked as ${status}`);
       fetchToday();
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Failed');
+      notify.error(err.response?.data?.message || 'Failed');
     } finally {
       setMarking(p => ({ ...p, [key]: false }));
     }
@@ -60,7 +60,7 @@ export default function Attendance() {
   ) || [];
 
   const groupedByPeriod = filtered.reduce((acc, c) => {
-    const key = `${c.start_time}–${c.end_time} (${c.slot_name})`;
+    const key = `${c.start_time}â€“${c.end_time} (${c.slot_name})`;
     if (!acc[key]) acc[key] = [];
     acc[key].push(c);
     return acc;
@@ -118,7 +118,7 @@ export default function Attendance() {
           Object.entries(groupedByPeriod).map(([period, entries]) => (
             <div key={period} className="card overflow-hidden">
               <div style={{ padding:'10px 16px', background:'#1e40af', color:'#fff', fontSize:13, fontWeight:600 }}>
-                🕐 {period}
+                ðŸ• {period}
               </div>
               <div className="divide-y divide-slate-100 dark:divide-slate-700">
                 {entries.map((entry, i) => {
@@ -138,7 +138,7 @@ export default function Attendance() {
                           </span>
                         </p>
                         <p style={{ fontSize:12, color:'#64748b', margin:'2px 0 0' }}>
-                          {entry.staff_name} · {entry.dept_name} Y{entry.year} S{entry.semester} {entry.section} · {entry.room_number}
+                          {entry.staff_name} Â· {entry.dept_name} Y{entry.year} S{entry.semester} {entry.section} Â· {entry.room_number}
                         </p>
                       </div>
                       {/* Status badge */}
@@ -177,3 +177,4 @@ export default function Attendance() {
     </div>
   );
 }
+

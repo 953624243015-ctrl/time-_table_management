@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { Plus, Pencil, Trash2, Building2 } from 'lucide-react';
 import { departmentAPI } from '../../api';
 import useCRUD from '../../hooks/useCRUD';
@@ -7,7 +7,7 @@ import Pagination from '../../components/common/Pagination';
 import Modal from '../../components/common/Modal';
 import ConfirmDialog from '../../components/common/ConfirmDialog';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
-import toast from 'react-hot-toast';
+import notify from '../../utils/notify';
 
 const empty = { name: '', code: '', hod_name: '' };
 
@@ -25,21 +25,21 @@ const Departments = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.name.trim() || !form.code.trim()) return toast.error('Name and Code are required');
+    if (!form.name.trim() || !form.code.trim()) return notify.error('Name and Code are required');
     setSaving(true);
     try {
       if (editing) await update(editing.id, form);
       else await create(form);
       setModal(false);
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Operation failed');
+      notify.error(err.response?.data?.message || 'Operation failed');
     } finally { setSaving(false); }
   };
 
   const handleDelete = async () => {
     setDeleting(true);
     try { await remove(deleteId); setDeleteId(null); }
-    catch (err) { toast.error(err.response?.data?.message || 'Delete failed'); }
+    catch (err) { notify.error(err.response?.data?.message || 'Delete failed'); }
     finally { setDeleting(false); }
   };
 
@@ -83,7 +83,7 @@ const Departments = () => {
                   <td className="table-cell w-12">{(params.page - 1) * params.limit + i + 1}</td>
                   <td className="table-cell font-medium text-slate-900 dark:text-slate-100">{item.name}</td>
                   <td className="table-cell"><span className="bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 px-2 py-0.5 rounded-full text-xs font-mono font-bold">{item.code}</span></td>
-                  <td className="table-cell">{item.hod_name || '—'}</td>
+                  <td className="table-cell">{item.hod_name || 'â€”'}</td>
                   <td className="table-cell text-center">{item.staff_count || 0}</td>
                   <td className="table-cell text-center">{item.class_count || 0}</td>
                   <td className="table-cell text-center">{item.subject_count || 0}</td>
@@ -132,3 +132,4 @@ const Departments = () => {
 };
 
 export default Departments;
+

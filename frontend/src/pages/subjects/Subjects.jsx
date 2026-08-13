@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { Plus, Pencil, Trash2, BookOpen } from 'lucide-react';
 import { subjectAPI, departmentAPI, staffAPI } from '../../api';
 import useCRUD from '../../hooks/useCRUD';
@@ -7,7 +7,7 @@ import Pagination from '../../components/common/Pagination';
 import Modal from '../../components/common/Modal';
 import ConfirmDialog from '../../components/common/ConfirmDialog';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
-import toast from 'react-hot-toast';
+import notify from '../../utils/notify';
 
 const empty = { subject_code: '', subject_name: '', department_id: '', semester: '', hours_per_week: 3, subject_type: 'theory', credits: 3 };
 
@@ -36,7 +36,7 @@ const Subjects = () => {
       if (editing) await update(editing.id, form);
       else await create(form);
       setModal(false);
-    } catch (err) { toast.error(err.response?.data?.message || 'Operation failed'); }
+    } catch (err) { notify.error(err.response?.data?.message || 'Operation failed'); }
     finally { setSaving(false); }
   };
 
@@ -92,7 +92,7 @@ const Subjects = () => {
                     <td className="table-cell"><span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${typeColor(item.subject_type)}`}>{item.subject_type}</span></td>
                     <td className="table-cell text-center">{item.hours_per_week}</td>
                     <td className="table-cell text-center">{item.credits}</td>
-                    <td className="table-cell text-xs text-slate-500 max-w-[140px] truncate">{item.assigned_faculty || '—'}</td>
+                    <td className="table-cell text-xs text-slate-500 max-w-[140px] truncate">{item.assigned_faculty || 'â€”'}</td>
                     <td className="table-cell">
                       <div className="flex gap-1">
                         <button onClick={() => openEdit(item)} className="p-1.5 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 text-blue-600"><Pencil className="w-4 h-4" /></button>
@@ -157,9 +157,10 @@ const Subjects = () => {
         </form>
       </Modal>
 
-      <ConfirmDialog open={!!deleteId} title="Delete Subject" message="Delete this subject?" onConfirm={async () => { try { await remove(deleteId); setDeleteId(null); } catch(e){ toast.error(e.response?.data?.message||'Failed'); } }} onCancel={() => setDeleteId(null)} />
+      <ConfirmDialog open={!!deleteId} title="Delete Subject" message="Delete this subject?" onConfirm={async () => { try { await remove(deleteId); setDeleteId(null); } catch(e){ notify.error(e.response?.data?.message||'Failed'); } }} onCancel={() => setDeleteId(null)} />
     </div>
   );
 };
 
 export default Subjects;
+

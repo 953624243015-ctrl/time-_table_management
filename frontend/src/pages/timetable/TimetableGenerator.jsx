@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { Cpu, Zap, CheckCircle2, AlertTriangle, RefreshCw, List } from 'lucide-react';
 import { timetableAPI, departmentAPI, timeslotAPI } from '../../api';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
-import toast from 'react-hot-toast';
+import notify from '../../utils/notify';
 
 const TimetableGenerator = () => {
   const [depts, setDepts] = useState([]);
@@ -34,7 +34,7 @@ const TimetableGenerator = () => {
   const handleGenerate = async (e) => {
     e.preventDefault();
     if (!form.department_id || !form.semester || !form.academic_year_id) {
-      return toast.error('Please select Department, Semester and Academic Year');
+      return notify.error('Please select Department, Semester and Academic Year');
     }
     setGenerating(true);
     setResult(null);
@@ -45,10 +45,10 @@ const TimetableGenerator = () => {
         academic_year_id: +form.academic_year_id,
       });
       setResult(res.data.data);
-      toast.success('Timetable generated successfully!');
+      notify.success('Timetable generated successfully!');
       fetchLogs();
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Generation failed');
+      notify.error(err.response?.data?.message || 'Generation failed');
     } finally {
       setGenerating(false);
     }
@@ -70,7 +70,7 @@ const TimetableGenerator = () => {
         </div>
         <div>
           <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">AI Timetable Generator</h2>
-          <p className="text-sm text-slate-500">Powered by Genetic Algorithm — generates conflict-free schedules</p>
+          <p className="text-sm text-slate-500">Powered by Genetic Algorithm â€” generates conflict-free schedules</p>
         </div>
       </div>
 
@@ -167,7 +167,7 @@ const TimetableGenerator = () => {
               </div>
               <div className={`mt-4 px-4 py-3 rounded-xl text-center font-medium text-sm ${statusColor[result.optimizationStatus] || statusColor.acceptable}`}>
                 Status: {result.optimizationStatus?.toUpperCase()}
-                {result.conflicts === 0 && ' ✓ Zero Conflicts!'}
+                {result.conflicts === 0 && ' âœ“ Zero Conflicts!'}
               </div>
             </div>
           )}
@@ -201,14 +201,14 @@ const TimetableGenerator = () => {
                 : !logs.length ? <tr><td colSpan={9} className="text-center py-8 text-slate-400">No generation history</td></tr>
                 : logs.map(log => (
                   <tr key={log.id} className="hover:bg-slate-50 dark:hover:bg-slate-700/30">
-                    <td className="table-cell font-medium text-sm">{log.department_name || '—'}</td>
+                    <td className="table-cell font-medium text-sm">{log.department_name || 'â€”'}</td>
                     <td className="table-cell text-center">Sem {log.semester}</td>
                     <td className="table-cell text-slate-500">{log.year_label}</td>
                     <td className="table-cell text-center">{log.generation_count}</td>
                     <td className="table-cell text-center font-mono text-primary-600">{Number(log.fitness_score).toFixed(1)}</td>
                     <td className="table-cell text-center">{log.conflict_count}</td>
                     <td className="table-cell"><span className={logStatusColor[log.status] || 'badge-inactive'}>{log.status}</span></td>
-                    <td className="table-cell text-slate-500 text-xs">{log.generated_by_name || '—'}</td>
+                    <td className="table-cell text-slate-500 text-xs">{log.generated_by_name || 'â€”'}</td>
                     <td className="table-cell text-slate-500 text-xs">{new Date(log.started_at).toLocaleString()}</td>
                   </tr>
                 ))}
@@ -221,3 +221,4 @@ const TimetableGenerator = () => {
 };
 
 export default TimetableGenerator;
+

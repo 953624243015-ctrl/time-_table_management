@@ -1,8 +1,9 @@
+﻿import notify from '../../utils/notify';
 import { Moon, Sun, LogOut, User, Bell } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { useNavigate, useLocation } from 'react-router-dom';
-import toast from 'react-hot-toast';
+
 
 const pageTitles = {
   '/': 'Dashboard',
@@ -31,7 +32,7 @@ const Navbar = () => {
 
   const handleLogout = () => {
     logout();
-    toast.success('Logged out successfully');
+    notify.success('Logged out successfully');
     navigate('/login');
   };
 
@@ -106,3 +107,4 @@ const Navbar = () => {
 };
 
 export default Navbar;
+

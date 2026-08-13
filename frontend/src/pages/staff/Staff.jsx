@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { Plus, Pencil, Trash2, Users } from 'lucide-react';
 import { staffAPI, departmentAPI } from '../../api';
 import useCRUD from '../../hooks/useCRUD';
@@ -7,7 +7,7 @@ import Pagination from '../../components/common/Pagination';
 import Modal from '../../components/common/Modal';
 import ConfirmDialog from '../../components/common/ConfirmDialog';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
-import toast from 'react-hot-toast';
+import notify from '../../utils/notify';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 const empty = { staff_id: '', name: '', department_id: '', designation: '', email: '', phone: '', max_hours_per_week: 20, status: 'active', availability: Object.fromEntries(DAYS.map(d => [d, 1])) };
@@ -34,13 +34,13 @@ const Staff = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.staff_id || !form.name || !form.department_id) return toast.error('Staff ID, Name and Department are required');
+    if (!form.staff_id || !form.name || !form.department_id) return notify.error('Staff ID, Name and Department are required');
     setSaving(true);
     try {
       if (editing) await update(editing.id, form);
       else await create(form);
       setModal(false);
-    } catch (err) { toast.error(err.response?.data?.message || 'Operation failed'); }
+    } catch (err) { notify.error(err.response?.data?.message || 'Operation failed'); }
     finally { setSaving(false); }
   };
 
@@ -83,9 +83,9 @@ const Staff = () => {
                     <td className="table-cell font-mono text-xs font-bold text-slate-600 dark:text-slate-400">{item.staff_id}</td>
                     <td className="table-cell font-medium text-slate-900 dark:text-slate-100">{item.name}</td>
                     <td className="table-cell"><span className="bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 px-2 py-0.5 rounded text-xs font-medium">{item.department_code}</span></td>
-                    <td className="table-cell text-slate-500">{item.designation || '—'}</td>
-                    <td className="table-cell text-slate-500 text-xs">{item.email || '—'}</td>
-                    <td className="table-cell text-slate-500 text-xs">{item.phone || '—'}</td>
+                    <td className="table-cell text-slate-500">{item.designation || 'â€”'}</td>
+                    <td className="table-cell text-slate-500 text-xs">{item.email || 'â€”'}</td>
+                    <td className="table-cell text-slate-500 text-xs">{item.phone || 'â€”'}</td>
                     <td className="table-cell text-center">{item.max_hours_per_week}</td>
                     <td className="table-cell"><span className={statusColors[item.status] || 'badge-inactive'}>{item.status?.replace('_', ' ')}</span></td>
                     <td className="table-cell">
@@ -172,9 +172,10 @@ const Staff = () => {
   async function handleDelete() {
     setDeleting(true);
     try { await remove(deleteId); setDeleteId(null); }
-    catch (err) { toast.error(err.response?.data?.message || 'Delete failed'); }
+    catch (err) { notify.error(err.response?.data?.message || 'Delete failed'); }
     finally { setDeleting(false); }
   }
 };
 
 export default Staff;
+

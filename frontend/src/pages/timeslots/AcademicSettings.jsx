@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { Settings, Save, RefreshCw } from 'lucide-react';
 import { timeslotAPI } from '../../api';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
-import toast from 'react-hot-toast';
+import notify from '../../utils/notify';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
@@ -27,7 +27,7 @@ const AcademicSettings = () => {
       setWorkingDays((s.working_days || 'Monday,Tuesday,Wednesday,Thursday,Friday').split(',').map(d => d.trim()));
       setAcademicYears(ayRes.data.data || []);
       setSemesters(semRes.data.data || []);
-    } catch { toast.error('Failed to load settings'); }
+    } catch { notify.error('Failed to load settings'); }
     finally { setLoading(false); }
   };
 
@@ -47,8 +47,8 @@ const AcademicSettings = () => {
           working_days: ordered.join(','),
         }
       });
-      toast.success('Academic settings saved successfully');
-    } catch (err) { toast.error(err.response?.data?.message || 'Save failed'); }
+      notify.success('Academic settings saved successfully');
+    } catch (err) { notify.error(err.response?.data?.message || 'Save failed'); }
     finally { setSaving(false); }
   };
 
@@ -128,7 +128,7 @@ const AcademicSettings = () => {
             <div key={ay.id} className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-700/50 rounded-lg">
               <span className="font-medium text-slate-900 dark:text-slate-100">{ay.year_label}</span>
               <div className="flex items-center gap-3">
-                <span className="text-xs text-slate-500">{ay.start_date?.substring(0,10)} → {ay.end_date?.substring(0,10)}</span>
+                <span className="text-xs text-slate-500">{ay.start_date?.substring(0,10)} â†’ {ay.end_date?.substring(0,10)}</span>
                 {ay.is_current ? <span className="badge-active">Current</span> : <span className="badge-inactive">Inactive</span>}
               </div>
             </div>
@@ -163,3 +163,4 @@ const AcademicSettings = () => {
 };
 
 export default AcademicSettings;
+

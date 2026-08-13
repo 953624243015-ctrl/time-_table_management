@@ -1,8 +1,9 @@
+﻿import notify from '../../utils/notify';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Cpu, Lock, Mail } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import toast from 'react-hot-toast';
+
 
 const Login = () => {
   const [form, setForm] = useState({ email: 'admin@college.edu', password: 'Admin@123' });
@@ -13,14 +14,14 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.email || !form.password) return toast.error('Please fill all fields');
+    if (!form.email || !form.password) return notify.error('Please fill all fields');
     setLoading(true);
     try {
       await login(form.email, form.password);
-      toast.success('Welcome back!');
+      notify.success('Welcome back!');
       navigate('/');
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Login failed');
+      notify.error(err.response?.data?.message || 'Login failed');
     } finally {
       setLoading(false);
     }
@@ -98,7 +99,7 @@ const Login = () => {
                   value={form.password}
                   onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
                   className="input-field pl-10 pr-10"
-                  placeholder="••••••••"
+                  placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
                   required
                 />
                 <button type="button" onClick={() => setShow(s => !s)}
@@ -130,3 +131,4 @@ const Login = () => {
 };
 
 export default Login;
+

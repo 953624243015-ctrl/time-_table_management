@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { Plus, Pencil, Trash2, DoorOpen } from 'lucide-react';
 import { roomAPI } from '../../api';
 import useCRUD from '../../hooks/useCRUD';
@@ -7,7 +7,7 @@ import Pagination from '../../components/common/Pagination';
 import Modal from '../../components/common/Modal';
 import ConfirmDialog from '../../components/common/ConfirmDialog';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
-import toast from 'react-hot-toast';
+import notify from '../../utils/notify';
 
 const ROOM_TYPES = [
   { value: 'classroom', label: 'Classroom', color: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300' },
@@ -36,7 +36,7 @@ const Rooms = () => {
       if (editing) await update(editing.id, form);
       else await create(form);
       setModal(false);
-    } catch (err) { toast.error(err.response?.data?.message || 'Operation failed'); }
+    } catch (err) { notify.error(err.response?.data?.message || 'Operation failed'); }
     finally { setSaving(false); }
   };
 
@@ -80,7 +80,7 @@ const Rooms = () => {
                     <td className="table-cell font-bold text-slate-900 dark:text-slate-100">{item.room_number}</td>
                     <td className="table-cell"><span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getRoomTypeStyle(item.room_type)}`}>{getRoomTypeLabel(item.room_type)}</span></td>
                     <td className="table-cell text-center">{item.capacity}</td>
-                    <td className="table-cell text-slate-500">{item.building || '—'}</td>
+                    <td className="table-cell text-slate-500">{item.building || 'â€”'}</td>
                     <td className="table-cell"><span className={item.is_active ? 'badge-active' : 'badge-inactive'}>{item.is_active ? 'Active' : 'Inactive'}</span></td>
                     <td className="table-cell">
                       <div className="flex gap-1">
@@ -127,9 +127,10 @@ const Rooms = () => {
         </form>
       </Modal>
 
-      <ConfirmDialog open={!!deleteId} title="Delete Room" message="Delete this room?" onConfirm={async () => { try { await remove(deleteId); setDeleteId(null); } catch(e) { toast.error(e.response?.data?.message||'Failed'); } }} onCancel={() => setDeleteId(null)} />
+      <ConfirmDialog open={!!deleteId} title="Delete Room" message="Delete this room?" onConfirm={async () => { try { await remove(deleteId); setDeleteId(null); } catch(e) { notify.error(e.response?.data?.message||'Failed'); } }} onCancel={() => setDeleteId(null)} />
     </div>
   );
 };
 
 export default Rooms;
+

@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { Timer, Play, Save, Check, RefreshCw, Zap } from 'lucide-react';
 import { intervalAPI } from '../../api';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
-import toast from 'react-hot-toast';
+import notify from '../../utils/notify';
 
 const DEFAULT_FORM = {
   start_time: '09:00',
@@ -47,9 +47,9 @@ export default function IntervalSettings() {
     try {
       const res = await intervalAPI.calculate(form);
       setPreview(res.data.data.slots);
-      toast.success(res.data.message);
+      notify.success(res.data.message);
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Calculation failed');
+      notify.error(err.response?.data?.message || 'Calculation failed');
     } finally { setLoading(false); }
   };
 
@@ -57,21 +57,21 @@ export default function IntervalSettings() {
     setSaving(true);
     try {
       await intervalAPI.saveSettings(form);
-      toast.success('Interval settings saved');
+      notify.success('Interval settings saved');
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Save failed');
+      notify.error(err.response?.data?.message || 'Save failed');
     } finally { setSaving(false); }
   };
 
   const handleApply = async () => {
-    if (!preview.length) return toast.error('Generate preview first');
+    if (!preview.length) return notify.error('Generate preview first');
     if (!confirm(`Apply ${preview.length} time slots? This will REPLACE current time slots.`)) return;
     setApplying(true);
     try {
       await intervalAPI.apply({ slots: preview });
-      toast.success('Time slots applied to schedule!');
+      notify.success('Time slots applied to schedule!');
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Apply failed');
+      notify.error(err.response?.data?.message || 'Apply failed');
     } finally { setApplying(false); }
   };
 
@@ -156,7 +156,7 @@ export default function IntervalSettings() {
               <label className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Include Saturday</label>
               <select className="input-field" value={form.include_saturday} onChange={e => f('include_saturday', +e.target.value)}>
                 <option value={1}>Yes</option>
-                <option value={0}>No (Mon–Fri only)</option>
+                <option value={0}>No (Monâ€“Fri only)</option>
               </select>
             </div>
           </div>
@@ -165,13 +165,13 @@ export default function IntervalSettings() {
           <div style={{ background:'#f8fafc', borderRadius:8, padding:12, border:'1px solid #e2e8f0' }}>
             <p style={{ fontSize:12, fontWeight:600, color:'#64748b', marginBottom:6 }}>EXAMPLE</p>
             <p style={{ fontSize:13, color:'#475569', margin:0 }}>
-              Period 1: {form.start_time} → {addMinutes(form.start_time, +form.period_duration)}
+              Period 1: {form.start_time} â†’ {addMinutes(form.start_time, +form.period_duration)}
             </p>
             <p style={{ fontSize:13, color:'#10b981', margin:'2px 0' }}>
-              Interval: {addMinutes(form.start_time, +form.period_duration)} → {addMinutes(form.start_time, +form.period_duration + +form.interval_duration)} ({form.interval_duration} min)
+              Interval: {addMinutes(form.start_time, +form.period_duration)} â†’ {addMinutes(form.start_time, +form.period_duration + +form.interval_duration)} ({form.interval_duration} min)
             </p>
             <p style={{ fontSize:13, color:'#475569' }}>
-              Period 2: {addMinutes(form.start_time, +form.period_duration + +form.interval_duration)} → {addMinutes(form.start_time, +form.period_duration * 2 + +form.interval_duration)}
+              Period 2: {addMinutes(form.start_time, +form.period_duration + +form.interval_duration)} â†’ {addMinutes(form.start_time, +form.period_duration * 2 + +form.interval_duration)}
             </p>
           </div>
         </div>
@@ -204,11 +204,11 @@ export default function IntervalSettings() {
                 return (
                   <div key={i} style={{ display:'flex', alignItems:'center', gap:10, padding:'8px 12px', borderRadius:8, background:c.bg, border:`1px solid ${c.border}` }}>
                     <div style={{ width:28, height:28, borderRadius:6, background:c.border, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-                      {slot.is_break ? '☕' : <span style={{ fontSize:11, fontWeight:700, color:c.text }}>{slot.period_number}</span>}
+                      {slot.is_break ? 'â˜•' : <span style={{ fontSize:11, fontWeight:700, color:c.text }}>{slot.period_number}</span>}
                     </div>
                     <div style={{ flex:1 }}>
                       <p style={{ fontSize:13, fontWeight:600, color:c.text, margin:0 }}>{slot.slot_name}</p>
-                      <p style={{ fontSize:11, color:c.text, opacity:0.8, margin:0 }}>{slot.start_time} – {slot.end_time} ({slot.duration} min)</p>
+                      <p style={{ fontSize:11, color:c.text, opacity:0.8, margin:0 }}>{slot.start_time} â€“ {slot.end_time} ({slot.duration} min)</p>
                     </div>
                     {slot.is_break && <span style={{ fontSize:10, fontWeight:700, background:c.border, color:c.text, padding:'2px 6px', borderRadius:99 }}>{slot.break_type?.toUpperCase()}</span>}
                   </div>
@@ -227,3 +227,4 @@ function addMinutes(timeStr, mins) {
   const total = h * 60 + m + mins;
   return `${String(Math.floor(total / 60) % 24).padStart(2,'0')}:${String(total % 60).padStart(2,'0')}`;
 }
+

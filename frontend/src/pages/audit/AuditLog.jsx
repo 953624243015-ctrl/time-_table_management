@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { ScrollText, RefreshCw, Search, Filter } from 'lucide-react';
 import { statisticsAPI } from '../../api';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
@@ -105,8 +105,8 @@ export default function AuditLog() {
                         <span className="truncate block" title={log.description}>{log.description}</span>
                       </td>
                       <td className="table-cell font-medium">{log.user_name || 'System'}</td>
-                      <td className="table-cell capitalize text-slate-500">{log.role || '—'}</td>
-                      <td className="table-cell font-mono text-xs text-slate-400">{log.ip_address || '—'}</td>
+                      <td className="table-cell capitalize text-slate-500">{log.role || 'â€”'}</td>
+                      <td className="table-cell font-mono text-xs text-slate-400">{log.ip_address || 'â€”'}</td>
                       <td className="table-cell text-xs text-slate-500 whitespace-nowrap">
                         {new Date(log.created_at).toLocaleString('en-IN')}
                       </td>
@@ -127,3 +127,4 @@ export default function AuditLog() {
     </div>
   );
 }
+

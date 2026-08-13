@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { Plus, Pencil, Trash2, GraduationCap } from 'lucide-react';
 import { classAPI, departmentAPI, timeslotAPI } from '../../api';
 import useCRUD from '../../hooks/useCRUD';
@@ -7,7 +7,7 @@ import Pagination from '../../components/common/Pagination';
 import Modal from '../../components/common/Modal';
 import ConfirmDialog from '../../components/common/ConfirmDialog';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
-import toast from 'react-hot-toast';
+import notify from '../../utils/notify';
 
 const empty = { department_id: '', year: '', semester: '', section: '', strength: 60, academic_year_id: '' };
 
@@ -36,7 +36,7 @@ const Classes = () => {
       if (editing) await update(editing.id, form);
       else await create(form);
       setModal(false);
-    } catch (err) { toast.error(err.response?.data?.message || 'Operation failed'); }
+    } catch (err) { notify.error(err.response?.data?.message || 'Operation failed'); }
     finally { setSaving(false); }
   };
 
@@ -79,7 +79,7 @@ const Classes = () => {
                     <td className="table-cell">Sem {item.semester}</td>
                     <td className="table-cell"><span className="font-bold text-primary-600">{item.section}</span></td>
                     <td className="table-cell text-center">{item.strength}</td>
-                    <td className="table-cell text-slate-500 text-xs">{item.academic_year || '—'}</td>
+                    <td className="table-cell text-slate-500 text-xs">{item.academic_year || 'â€”'}</td>
                     <td className="table-cell">
                       <div className="flex gap-1">
                         <button onClick={() => openEdit(item)} className="p-1.5 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 text-blue-600"><Pencil className="w-4 h-4" /></button>
@@ -143,9 +143,10 @@ const Classes = () => {
         </form>
       </Modal>
 
-      <ConfirmDialog open={!!deleteId} title="Delete Class" message="Delete this class?" onConfirm={async () => { try { await remove(deleteId); setDeleteId(null); } catch(e) { toast.error(e.response?.data?.message||'Failed'); } }} onCancel={() => setDeleteId(null)} />
+      <ConfirmDialog open={!!deleteId} title="Delete Class" message="Delete this class?" onConfirm={async () => { try { await remove(deleteId); setDeleteId(null); } catch(e) { notify.error(e.response?.data?.message||'Failed'); } }} onCancel={() => setDeleteId(null)} />
     </div>
   );
 };
 
 export default Classes;
+

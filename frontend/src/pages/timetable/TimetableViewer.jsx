@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { Eye, Download, FileSpreadsheet, Printer } from 'lucide-react';
 import { timetableAPI, classAPI, staffAPI, roomAPI, timeslotAPI } from '../../api';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
-import toast from 'react-hot-toast';
+import notify from '../../utils/notify';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
@@ -44,12 +44,12 @@ const TimetableViewer = () => {
 
   const getEntityLabel = (e) => {
     if (viewType === 'class') return `${e.department_code || ''} Y${e.year} S${e.semester} Sec-${e.section}`;
-    if (viewType === 'staff') return `${e.staff_id} — ${e.name}`;
+    if (viewType === 'staff') return `${e.staff_id} â€” ${e.name}`;
     return `${e.room_number} (${(e.room_type || '').replace(/_/g, ' ')})`;
   };
 
   const fetchTimetable = async () => {
-    if (!selectedId) return toast.error('Please select a ' + viewType);
+    if (!selectedId) return notify.error('Please select a ' + viewType);
     setLoading(true);
     setTimetable(null);
     try {
@@ -60,7 +60,7 @@ const TimetableViewer = () => {
       else res = await timetableAPI.getRoomTimetable(selectedId, params);
       setTimetable(res.data.data);
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Failed to load timetable');
+      notify.error(err.response?.data?.message || 'Failed to load timetable');
     } finally { setLoading(false); }
   };
 
@@ -73,9 +73,9 @@ const TimetableViewer = () => {
   };
 
   const handleExportPDF = async () => {
-    if (!timetable?.entries?.length) return toast.error('No timetable data to export');
+    if (!timetable?.entries?.length) return notify.error('No timetable data to export');
     try {
-      toast.loading('Generating PDF...', { id: 'pdf' });
+      notify.loading('Generating PDF...', { id: 'pdf' });
       // Build params based on viewType
       const params = { academic_year_id: academicYearId || '' };
       if (viewType === 'class')  params.class_id = selectedId;
@@ -83,7 +83,7 @@ const TimetableViewer = () => {
       else { params.room_id = selectedId; params.type = 'room'; }
 
       const res = await timetableAPI.exportPDF(params);
-      toast.dismiss('pdf');
+      notify.dismiss('pdf');
       const blob = new Blob([res.data], { type: 'application/pdf' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -91,24 +91,24 @@ const TimetableViewer = () => {
       a.download = `timetable_${viewType}_${selectedId}.pdf`;
       document.body.appendChild(a); a.click(); document.body.removeChild(a);
       URL.revokeObjectURL(url);
-      toast.success('PDF downloaded successfully');
+      notify.success('PDF downloaded successfully');
     } catch (err) {
-      toast.dismiss('pdf');
-      toast.error(err.response?.data?.message || 'PDF export failed');
+      notify.dismiss('pdf');
+      notify.error(err.response?.data?.message || 'PDF export failed');
     }
   };
 
   const handleExportExcel = async () => {
-    if (!timetable?.entries?.length) return toast.error('No timetable data to export');
+    if (!timetable?.entries?.length) return notify.error('No timetable data to export');
     try {
-      toast.loading('Generating Excel...', { id: 'excel' });
+      notify.loading('Generating Excel...', { id: 'excel' });
       const params = { academic_year_id: academicYearId || '' };
       if (viewType === 'class')  params.class_id = selectedId;
       else if (viewType === 'staff') { params.staff_id = selectedId; params.type = 'staff'; }
       else { params.room_id = selectedId; params.type = 'room'; }
 
       const res = await timetableAPI.exportExcel(params);
-      toast.dismiss('excel');
+      notify.dismiss('excel');
       const blob = new Blob([res.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -116,10 +116,10 @@ const TimetableViewer = () => {
       a.download = `timetable_${viewType}_${selectedId}.xlsx`;
       document.body.appendChild(a); a.click(); document.body.removeChild(a);
       URL.revokeObjectURL(url);
-      toast.success('Excel downloaded successfully');
+      notify.success('Excel downloaded successfully');
     } catch (err) {
-      toast.dismiss('excel');
-      toast.error(err.response?.data?.message || 'Excel export failed');
+      notify.dismiss('excel');
+      notify.error(err.response?.data?.message || 'Excel export failed');
     }
   };
 
@@ -175,7 +175,7 @@ const TimetableViewer = () => {
               onChange={e => { setSelectedId(e.target.value); setTimetable(null); }}
               disabled={loadingEntities}
             >
-              <option value="">— Select {viewType} —</option>
+              <option value="">â€” Select {viewType} â€”</option>
               {entities.map(e => (
                 <option key={e.id} value={e.id}>{getEntityLabel(e)}</option>
               ))}
@@ -193,7 +193,7 @@ const TimetableViewer = () => {
               <option value="">All Years</option>
               {acYears.map(y => (
                 <option key={y.id} value={String(y.id)}>
-                  {y.year_label}{y.is_current ? ' ★' : ''}
+                  {y.year_label}{y.is_current ? ' â˜…' : ''}
                 </option>
               ))}
             </select>
@@ -213,7 +213,7 @@ const TimetableViewer = () => {
             View
           </button>
 
-          {/* Export buttons — only show when timetable loaded */}
+          {/* Export buttons â€” only show when timetable loaded */}
           {timetable?.entries?.length > 0 && (
             <>
               <button onClick={handleExportPDF} className="btn-secondary" style={{ alignSelf: 'flex-end' }}>
@@ -241,7 +241,7 @@ const TimetableViewer = () => {
               <Eye size={48} style={{ margin: '0 auto 12px', opacity: 0.3 }} />
               <p style={{ fontSize: 16, fontWeight: 600, marginBottom: 6 }}>No timetable found</p>
               <p style={{ fontSize: 13 }}>
-                Make sure you selected the correct Academic Year (★ = current) and generated a timetable first.
+                Make sure you selected the correct Academic Year (â˜… = current) and generated a timetable first.
               </p>
             </div>
           ) : (
@@ -252,7 +252,7 @@ const TimetableViewer = () => {
                   {timetable.entries.length} schedule entries
                 </span>
                 <span style={{ fontSize: 12, color: '#3b82f6' }}>
-                  {usedDays.join(' · ')}
+                  {usedDays.join(' Â· ')}
                 </span>
                 <div style={{ marginLeft: 'auto', display: 'flex', gap: 12 }}>
                   <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: '#475569' }}>
@@ -275,7 +275,7 @@ const TimetableViewer = () => {
                         <th key={slot.id} style={{ padding: '8px 6px', color: '#ffffff', fontSize: 11, fontWeight: 600, textAlign: 'center', border: '1px solid #1d4ed8', minWidth: 110 }}>
                           <div>{slot.slot_name}</div>
                           <div style={{ fontWeight: 400, opacity: 0.75, fontSize: 10, marginTop: 2 }}>
-                            {slot.start_time?.substring(0, 5)}–{slot.end_time?.substring(0, 5)}
+                            {slot.start_time?.substring(0, 5)}â€“{slot.end_time?.substring(0, 5)}
                           </div>
                         </th>
                       ))}
@@ -305,7 +305,7 @@ const TimetableViewer = () => {
                                   <div style={{ fontWeight: 700, fontSize: 12 }}>{entry.subject_code}</div>
                                   <div style={{ opacity: 0.85, marginTop: 1 }} title={entry.subject_name}>
                                     {entry.subject_name?.length > 18
-                                      ? entry.subject_name.substring(0, 16) + '…'
+                                      ? entry.subject_name.substring(0, 16) + 'â€¦'
                                       : entry.subject_name}
                                   </div>
                                   <div style={{ opacity: 0.75, marginTop: 2 }}>
@@ -314,7 +314,7 @@ const TimetableViewer = () => {
                                   <div style={{ opacity: 0.65 }}>{entry.room_number}</div>
                                 </div>
                               ) : (
-                                <div style={{ textAlign: 'center', color: '#cbd5e1', fontSize: 18, paddingTop: 20 }}>—</div>
+                                <div style={{ textAlign: 'center', color: '#cbd5e1', fontSize: 18, paddingTop: 20 }}>â€”</div>
                               )}
                             </td>
                           );
@@ -334,7 +334,7 @@ const TimetableViewer = () => {
         <div className="card" style={{ padding: '80px 20px', textAlign: 'center', color: '#94a3b8' }}>
           <Eye size={56} style={{ margin: '0 auto 16px', opacity: 0.2 }} />
           <p style={{ fontSize: 18, fontWeight: 600, marginBottom: 8 }}>No timetable loaded</p>
-          <p style={{ fontSize: 13 }}>Select a view type and entity, choose the Academic Year (★), then click View</p>
+          <p style={{ fontSize: 13 }}>Select a view type and entity, choose the Academic Year (â˜…), then click View</p>
         </div>
       )}
     </div>
@@ -342,3 +342,4 @@ const TimetableViewer = () => {
 };
 
 export default TimetableViewer;
+
