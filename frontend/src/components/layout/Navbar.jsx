@@ -1,9 +1,8 @@
-﻿import notify from '../../utils/notify';
-import { Moon, Sun, LogOut, User, Bell } from 'lucide-react';
+﻿import { Moon, Sun, LogOut, User, Menu } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { useNavigate, useLocation } from 'react-router-dom';
-
+import notify from '../../utils/notify';
 
 const pageTitles = {
   '/': 'Dashboard',
@@ -23,7 +22,7 @@ const pageTitles = {
   '/audit': 'Audit Log',
 };
 
-const Navbar = () => {
+const Navbar = ({ onMenuClick, showMenu }) => {
   const { user, logout } = useAuth();
   const { dark, toggle } = useTheme();
   const navigate = useNavigate();
@@ -42,7 +41,7 @@ const Navbar = () => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        padding: '0 24px',
+        padding: '0 12px 0 8px',
         height: 65,
         minHeight: 65,
         borderBottom: '1px solid #e2e8f0',
@@ -51,42 +50,61 @@ const Navbar = () => {
         top: 0,
         zIndex: 30,
         flexShrink: 0,
+        gap: 8,
       }}
       className="dark:bg-slate-900 dark:border-slate-700"
     >
-      <h1 style={{ fontSize: 18, fontWeight: 600, color: '#0f172a', margin: 0 }} className="dark:text-slate-100">
-        {title}
-      </h1>
+      {/* Left: hamburger + title */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0, flex: 1 }}>
+        {showMenu && (
+          <button
+            onClick={onMenuClick}
+            style={{
+              padding: 8, borderRadius: 8, border: 'none',
+              background: 'transparent', cursor: 'pointer',
+              color: '#64748b', display: 'flex', alignItems: 'center', flexShrink: 0,
+            }}
+            title="Menu"
+          >
+            <Menu size={20} />
+          </button>
+        )}
+        <h1
+          style={{
+            fontSize: 16, fontWeight: 600, color: '#0f172a', margin: 0,
+            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+          }}
+          className="dark:text-slate-100"
+        >
+          {title}
+        </h1>
+      </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        {/* Theme toggle */}
+      {/* Right: actions */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
+        {/* Dark mode toggle */}
         <button
           onClick={toggle}
           style={{ padding: 8, borderRadius: 8, border: 'none', background: 'transparent', cursor: 'pointer', color: '#64748b', display: 'flex', alignItems: 'center' }}
-          className="hover:bg-slate-100 dark:hover:bg-slate-700"
           title={dark ? 'Light Mode' : 'Dark Mode'}
         >
           {dark ? <Sun size={18} /> : <Moon size={18} />}
         </button>
 
-        {/* Notifications */}
-        <button
-          style={{ padding: 8, borderRadius: 8, border: 'none', background: 'transparent', cursor: 'pointer', color: '#64748b', display: 'flex', alignItems: 'center', position: 'relative' }}
-          className="hover:bg-slate-100 dark:hover:bg-slate-700"
+        {/* User avatar */}
+        <div
+          style={{
+            display: 'flex', alignItems: 'center', gap: 8,
+            paddingLeft: 8, borderLeft: '1px solid #e2e8f0',
+            marginLeft: 4,
+          }}
+          className="dark:border-slate-700"
         >
-          <Bell size={18} />
-          <span style={{ position: 'absolute', top: 8, right: 8, width: 8, height: 8, background: '#ef4444', borderRadius: '50%' }} />
-        </button>
-
-        {/* Divider */}
-        <div style={{ width: 1, height: 32, background: '#e2e8f0', margin: '0 8px' }} className="dark:bg-slate-700" />
-
-        {/* User info */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{ width: 34, height: 34, background: '#2563eb', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-            <User size={16} color="white" />
+          <div style={{ width: 32, height: 32, background: '#2563eb', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <User size={15} color="white" />
           </div>
-          <div style={{ lineHeight: 1.3 }}>
+          {/* Name — hidden on mobile */}
+          <div style={{ lineHeight: 1.3, display: 'none' }} className="sm:block">
             <div style={{ fontSize: 13, fontWeight: 600, color: '#0f172a', whiteSpace: 'nowrap' }} className="dark:text-slate-100">{user?.name}</div>
             <div style={{ fontSize: 11, color: '#94a3b8', textTransform: 'capitalize' }}>{user?.role}</div>
           </div>
@@ -96,7 +114,6 @@ const Navbar = () => {
         <button
           onClick={handleLogout}
           style={{ padding: 8, borderRadius: 8, border: 'none', background: 'transparent', cursor: 'pointer', color: '#64748b', display: 'flex', alignItems: 'center' }}
-          className="hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600"
           title="Logout"
         >
           <LogOut size={18} />
@@ -107,4 +124,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-
