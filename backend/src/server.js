@@ -29,19 +29,30 @@ const PORT = process.env.PORT || 5000;
 app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 
 app.use(cors({
-  // Allow Vercel frontend + localhost in dev
+  // Allow Vercel frontend + localhost in dev + local network (phone access)
   origin: function (origin, callback) {
+    // Allow requests with no origin (mobile apps, Postman, curl)
+    if (!origin) return callback(null, true);
+    
     const allowed = [
       process.env.FRONTEND_URL,
       'http://localhost:5173',
       'http://localhost:3000',
+      'http://127.0.0.1:5173',
     ].filter(Boolean);
-    // Allow requests with no origin (mobile apps, Postman, etc.)
-    if (!origin || allowed.some(u => origin.startsWith(u))) {
-      callback(null, true);
-    } else {
-      callback(new Error('CORS not allowed: ' + origin));
+
+    // Allow exact matches
+    if (allowed.some(u => origin.startsWith(u))) {
+      return callback(null, true);
     }
+
+    // Allow local network IPs (192.168.x.x, 172.16.x.x, 10.x.x.x)
+    const localNetworkPattern = /^http:\/\/(192\.168\.|172\.(1[6-9]|2[0-9]|3[0-1])\.|10\.)\d+\.\d+:\d+$/;
+    if (localNetworkPattern.test(origin)) {
+      return callback(null, true);
+    }
+
+    callback(new Error('CORS not allowed: ' + origin));
   },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
